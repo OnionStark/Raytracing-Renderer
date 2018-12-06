@@ -11,14 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\CommonPasses\AmbientOcclusionPass.cpp" />
-    <ClCompile Include="..\CommonPasses\CopyToOutputPass.cpp" />
-    <ClCompile Include="..\CommonPasses\JitteredGBufferPass.cpp" />
     <ClCompile Include="..\CommonPasses\LambertianPlusShadowPass.cpp" />
     <ClCompile Include="..\CommonPasses\LightProbeGBufferPass.cpp" />
-    <ClCompile Include="..\CommonPasses\SimpleAccumulationPass.cpp" />
     <ClCompile Include="..\CommonPasses\SimpleDiffuseGIPass.cpp" />
-    <ClCompile Include="..\CommonPasses\SimpleGBufferPass.cpp" />
     <ClCompile Include="..\CommonPasses\SimpleToneMappingPass.cpp" />
     <ClCompile Include="..\CommonPasses\ThinLensGBufferPass.cpp" />
     <ClCompile Include="..\SharedUtils\FullscreenLaunch.cpp" />
@@ -29,21 +24,19 @@
     <ClCompile Include="..\SharedUtils\ResourceManager.cpp" />
     <ClCompile Include="..\SharedUtils\SceneLoaderWrapper.cpp" />
     <ClCompile Include="..\SharedUtils\SimpleVars.cpp" />
+    <ClCompile Include="Passes\AmbientOcclusionPass.cpp" />
     <ClCompile Include="Passes\CopyToOutputPass.cpp" />
     <ClCompile Include="Passes\GGXGlobalIllumination.cpp" />
     <ClCompile Include="Passes\RayTracedGBufferPass.cpp" />
+    <ClCompile Include="Passes\SimpleAccumulationPass.cpp" />
     <ClCompile Include="Passes\SimpleGBufferPass.cpp" />
     <ClCompile Include="Raytracing-Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\CommonPasses\AmbientOcclusionPass.h" />
-    <ClInclude Include="..\CommonPasses\CopyToOutputPass.h" />
-    <ClInclude Include="..\CommonPasses\JitteredGBufferPass.h" />
+    <ClInclude Include="..\04-RayTracedGBuffer\Passes\RayTracedGBufferPass.h" />
     <ClInclude Include="..\CommonPasses\LambertianPlusShadowPass.h" />
     <ClInclude Include="..\CommonPasses\LightProbeGBufferPass.h" />
-    <ClInclude Include="..\CommonPasses\SimpleAccumulationPass.h" />
     <ClInclude Include="..\CommonPasses\SimpleDiffuseGIPass.h" />
-    <ClInclude Include="..\CommonPasses\SimpleGBufferPass.h" />
     <ClInclude Include="..\CommonPasses\SimpleToneMappingPass.h" />
     <ClInclude Include="..\CommonPasses\ThinLensGBufferPass.h" />
     <ClInclude Include="..\SharedUtils\FullscreenLaunch.h" />
@@ -54,9 +47,10 @@
     <ClInclude Include="..\SharedUtils\ResourceManager.h" />
     <ClInclude Include="..\SharedUtils\SceneLoaderWrapper.h" />
     <ClInclude Include="..\SharedUtils\SimpleVars.h" />
+    <ClInclude Include="Passes\AmbientOcclusionPass.h" />
     <ClInclude Include="Passes\CopyToOutputPass.h" />
     <ClInclude Include="Passes\GGXGlobalIllumination.h" />
-    <ClInclude Include="Passes\RayTracedGBufferPass.h" />
+    <ClInclude Include="Passes\SimpleAccumulationPass.h" />
     <ClInclude Include="Passes\SimpleGBufferPass.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

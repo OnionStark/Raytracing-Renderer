@@ -19,12 +19,12 @@
 #include "Falcor.h"
 #include "../SharedUtils/RenderingPipeline.h"
 #include "../CommonPasses/LightProbeGBufferPass.h"
-#include "../CommonPasses/AmbientOcclusionPass.h"
-#include "../CommonPasses/SimpleAccumulationPass.h"
 #include "../CommonPasses/SimpleToneMappingPass.h"
 #include "Passes/CopyToOutputPass.h"
 #include "Passes/SimpleGBufferPass.h"
 #include "Passes/GGXGlobalIllumination.h"
+#include "Passes/AmbientOcclusionPass.h"
+#include "Passes/SimpleAccumulationPass.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
@@ -37,8 +37,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//pipeline->setPass(1, GGXGlobalIlluminationPass::create("HDRColorOutput"));  // Output our result to "HDRColorOutput"
 	//pipeline->setPass(2, SimpleAccumulationPass::create("HDRColorOutput"));     // Accumulate on "HDRColorOutput"
 	//pipeline->setPass(3, SimpleToneMappingPass::create("HDRColorOutput", ResourceManager::kOutputChannel));  // Tonemap "HDRColorOutput" to the output channel
-
-	pipeline->setPass(2, CopyToOutputPass::create());
+	pipeline->setPass(2, SimpleAccumulationPass::create("AmbientOcclusionTexture"));
+	pipeline->setPass(3, CopyToOutputPass::create());
    
 	// Define a set of config / window parameters for our program
     SampleConfig config;
