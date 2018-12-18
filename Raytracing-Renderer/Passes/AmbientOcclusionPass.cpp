@@ -37,7 +37,7 @@ bool AmbientOcclusionPass::initialize(RenderContext* pRenderContext, ResourceMan
 	// Note that we need the G-buffer's position and normal buffer, plus the standard output buffer
 	mPositionIndex = mpResManager->requestTextureResource("WorldPosition");
 	mNormalIndex   = mpResManager->requestTextureResource("WorldNormal");
-	mOutputIndex   = mpResManager->requestTextureResource("AmbientOcclusionTexture");
+	mOutputIndex   = mpResManager->requestTextureResource(mOutputTexName);
 
 	// Create our wrapper around a ray tracing pass.  Tell it where our ray generation shader and ray-specific shaders are
 	mpRays = RayLaunch::create(kFileRayTrace, kEntryPointRayGen);
@@ -76,7 +76,7 @@ void AmbientOcclusionPass::renderGui(Gui* pGui)
 void AmbientOcclusionPass::execute(RenderContext* pRenderContext)
 {
 	// Get our output buffer; clear it to black.
-	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(mOutputIndex, vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(mOutputTexName, vec4(0.0f, 0.0f, 0.0f, 0.0f));
 
 	// Do we have all the resources we need to render?  If not, return
 	if (!pDstTex || !mpRays || !mpRays->readyToRender()) return;
@@ -87,8 +87,8 @@ void AmbientOcclusionPass::execute(RenderContext* pRenderContext)
 	rayGenVars["RayGenCB"]["gAORadius"]    = mAORadius;
 	rayGenVars["RayGenCB"]["gMinT"]        = mpResManager->getMinTDist();  // From the UI dropdown
 	rayGenVars["RayGenCB"]["gNumRays"]     = uint32_t(mNumRaysPerPixel);
-	rayGenVars["gPos"]    = mpResManager->getTexture(mPositionIndex);
-	rayGenVars["gNorm"]   = mpResManager->getTexture(mNormalIndex);
+	rayGenVars["gPos"]    = mpResManager->getTexture("WorldPosition");
+	rayGenVars["gNorm"]   = mpResManager->getTexture("WorldNormal");
 	rayGenVars["gOutput"] = pDstTex;
 
 	// Shoot our AO rays

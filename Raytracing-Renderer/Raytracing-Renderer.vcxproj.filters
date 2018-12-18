@@ -26,12 +26,6 @@
     <ClCompile Include="..\CommonPasses\SimpleToneMappingPass.cpp">
       <Filter>CommonPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\CommonPasses\LightProbeGBufferPass.cpp">
-      <Filter>CommonPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\CommonPasses\SimpleDiffuseGIPass.cpp">
-      <Filter>CommonPasses</Filter>
-    </ClCompile>
     <ClCompile Include="Passes\GGXGlobalIllumination.cpp">
       <Filter>Passes</Filter>
     </ClCompile>
@@ -57,6 +51,12 @@
       <Filter>Passes</Filter>
     </ClCompile>
     <ClCompile Include="Passes\SimpleAccumulationPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\LightProbeGBufferPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\SimpleDiffuseGIPass.cpp">
       <Filter>Passes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -85,12 +85,6 @@
     <ClInclude Include="..\CommonPasses\SimpleToneMappingPass.h">
       <Filter>CommonPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\CommonPasses\LightProbeGBufferPass.h">
-      <Filter>CommonPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CommonPasses\SimpleDiffuseGIPass.h">
-      <Filter>CommonPasses</Filter>
-    </ClInclude>
     <ClInclude Include="Passes\GGXGlobalIllumination.h">
       <Filter>Passes</Filter>
     </ClInclude>
@@ -117,6 +111,12 @@
       <Filter>Passes</Filter>
     </ClInclude>
     <ClInclude Include="Passes\SimpleAccumulationPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\LightProbeGBufferPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\SimpleDiffuseGIPass.h">
       <Filter>Passes</Filter>
     </ClInclude>
   </ItemGroup>

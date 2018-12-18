@@ -23,7 +23,7 @@ namespace {
 };
 
 SimpleAccumulationPass::SimpleAccumulationPass(const std::string &bufferToAccumulate)
-	: ::RenderPass("Accumulation Pass", "Accumulation Options")
+	: ::RenderPass("DiffuseGI Accumulation Pass", "Accumulation Options")
 {
 	mAccumChannel = bufferToAccumulate;
 }

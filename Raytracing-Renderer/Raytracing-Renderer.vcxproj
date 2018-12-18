@@ -12,8 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CommonPasses\LambertianPlusShadowPass.cpp" />
-    <ClCompile Include="..\CommonPasses\LightProbeGBufferPass.cpp" />
-    <ClCompile Include="..\CommonPasses\SimpleDiffuseGIPass.cpp" />
     <ClCompile Include="..\CommonPasses\SimpleToneMappingPass.cpp" />
     <ClCompile Include="..\CommonPasses\ThinLensGBufferPass.cpp" />
     <ClCompile Include="..\SharedUtils\FullscreenLaunch.cpp" />
@@ -27,16 +25,16 @@
     <ClCompile Include="Passes\AmbientOcclusionPass.cpp" />
     <ClCompile Include="Passes\CopyToOutputPass.cpp" />
     <ClCompile Include="Passes\GGXGlobalIllumination.cpp" />
+    <ClCompile Include="Passes\LightProbeGBufferPass.cpp" />
     <ClCompile Include="Passes\RayTracedGBufferPass.cpp" />
     <ClCompile Include="Passes\SimpleAccumulationPass.cpp" />
+    <ClCompile Include="Passes\SimpleDiffuseGIPass.cpp" />
     <ClCompile Include="Passes\SimpleGBufferPass.cpp" />
     <ClCompile Include="Raytracing-Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\04-RayTracedGBuffer\Passes\RayTracedGBufferPass.h" />
     <ClInclude Include="..\CommonPasses\LambertianPlusShadowPass.h" />
-    <ClInclude Include="..\CommonPasses\LightProbeGBufferPass.h" />
-    <ClInclude Include="..\CommonPasses\SimpleDiffuseGIPass.h" />
     <ClInclude Include="..\CommonPasses\SimpleToneMappingPass.h" />
     <ClInclude Include="..\CommonPasses\ThinLensGBufferPass.h" />
     <ClInclude Include="..\SharedUtils\FullscreenLaunch.h" />
@@ -50,7 +48,9 @@
     <ClInclude Include="Passes\AmbientOcclusionPass.h" />
     <ClInclude Include="Passes\CopyToOutputPass.h" />
     <ClInclude Include="Passes\GGXGlobalIllumination.h" />
+    <ClInclude Include="Passes\LightProbeGBufferPass.h" />
     <ClInclude Include="Passes\SimpleAccumulationPass.h" />
+    <ClInclude Include="Passes\SimpleDiffuseGIPass.h" />
     <ClInclude Include="Passes\SimpleGBufferPass.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

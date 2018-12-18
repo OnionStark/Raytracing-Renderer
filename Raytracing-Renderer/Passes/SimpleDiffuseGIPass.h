@@ -16,49 +16,47 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********************************************************************************************************************/
 
+// This render pass starts to add global illumination (i.e., accumulating *indirect* lighting), which
+//     is very difficult to do with traditional rasterization.  In addition to our shadow ray, we also
+//     shoot one randomly selected interreflection ray (or 'color ray').
+
 #pragma once
 #include "../SharedUtils/RenderPass.h"
-#include "../SharedUtils/SimpleVars.h"
 #include "../SharedUtils/RayLaunch.h"
 
-/** Ray traced ambient occlusion pass.
-*/
-class AmbientOcclusionPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, AmbientOcclusionPass>
+class SimpleDiffuseGIPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, SimpleDiffuseGIPass>
 {
 public:
-    using SharedPtr = std::shared_ptr<AmbientOcclusionPass>;
-    using SharedConstPtr = std::shared_ptr<const AmbientOcclusionPass>;
+    using SharedPtr = std::shared_ptr<SimpleDiffuseGIPass>;
+    using SharedConstPtr = std::shared_ptr<const SimpleDiffuseGIPass>;
 
-    static SharedPtr create(const std::string &outBuf = ResourceManager::kOutputChannel) { return SharedPtr(new AmbientOcclusionPass(outBuf)); }
-    virtual ~AmbientOcclusionPass() = default;
+    static SharedPtr create(const std::string &outBuf = ResourceManager::kOutputChannel) { return SharedPtr(new SimpleDiffuseGIPass(outBuf)); }
+    virtual ~SimpleDiffuseGIPass() = default;
 
 protected:
-	AmbientOcclusionPass(const std::string &outBuf) : ::RenderPass("Ambient Occlusion Rays", "Ambient Occlusion Options") { mOutputTexName = outBuf; }
+	SimpleDiffuseGIPass(const std::string &outBuf) : ::RenderPass("Simple Diffuse GI Ray", "Simple Diffuse GI Options") { mOutputTexName = outBuf; }
 
     // Implementation of RenderPass interface
     bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
     void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
-    void renderGui(Gui* pGui) override;
     void execute(RenderContext* pRenderContext) override;
+	void renderGui(Gui* pGui) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool requiresScene() override { return true; }
 	bool usesRayTracing() override { return true; }
+	bool usesEnvironmentMap() override { return true; }
 
     // Rendering state
 	RayLaunch::SharedPtr                    mpRays;                 ///< Our wrapper around a DX Raytracing pass
     RtScene::SharedPtr                      mpScene;                ///< Our scene file (passed in from app)  
+
+	// Recursive ray tracing can be slow.  Add a toggle to disable, to allow you to manipulate the scene
+	bool                                    mDoIndirectGI = true;
+	bool                                    mDoCosSampling = true;
+	bool                                    mDoDirectShadows = true;
     
 	// Various internal parameters
-	float                                   mAORadius = 0.0f;       ///< What radius are we using for AO rays (i.e., maxT when ray tracing)
-	uint32_t                                mFrameCount = 0;        ///< Frame count used to help seed our shaders' random number generator
-	int32_t                                 mNumRaysPerPixel = 1;   ///< How many ambient occlusion rays should we shot per pixel?
-
-	// Indices we can use to query the resource manager for various texture resources
-	int32_t                                 mPositionIndex;         ///< An index for the G-Buffer wsPosition buffer
-	int32_t                                 mNormalIndex;           ///< An index for the G-Buffer wsNormal buffer
-	int32_t                                 mOutputIndex;           ///< An index for our output buffer
-
-	// The name of the buffer we want to store our computations into.
+	uint32_t                                mFrameCount = 0x1337u;  ///< A frame counter to vary random numbers over time
 	std::string                             mOutputTexName;         ///< Where do we want to store the results?
 };
