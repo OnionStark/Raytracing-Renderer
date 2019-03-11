@@ -34,7 +34,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     SampleConfig config;
     config.windowDesc.title = "Tutorial 4:  As in Tutorial 3, but using DX Raytracing to render the G-Buffer";
     config.windowDesc.resizableWindow = true;
-
+	
+	Logger::setVerbosity(Logger::Level::Error);
 	// Start our program!
 	RenderingPipeline::run(pipeline, config);
 }

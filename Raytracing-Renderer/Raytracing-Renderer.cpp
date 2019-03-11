@@ -49,10 +49,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
    
 	// Define a set of config / window parameters for our program
     SampleConfig config;
+	//config.showMessageBoxOnError = false;
 	config.windowDesc.title = "Raytracing Renderer";
 	config.windowDesc.resizableWindow = true;
 	config.windowDesc.width = 1920; 
 	config.windowDesc.height = 1080;
+
+	Logger::setVerbosity(Logger::Level::Error);
 
 	// Start our program!
 	RenderingPipeline::run(pipeline, config);
