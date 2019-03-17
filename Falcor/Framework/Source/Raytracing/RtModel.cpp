@@ -34,7 +34,11 @@
 
 namespace Falcor
 {
-    RtModel::RtModel(const Model& model, RtBuildFlags buildFlags) : mBuildFlags(buildFlags), Model(model)
+	void RtModel::updateBottomLevelData()
+	{
+		this->buildAccelerationStructure();
+	}
+	RtModel::RtModel(const Model& model, RtBuildFlags buildFlags) : mBuildFlags(buildFlags), Model(model)
     {
     }
 

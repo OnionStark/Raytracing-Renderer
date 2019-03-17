@@ -131,7 +131,7 @@ namespace Falcor
 
         mCommandsPending = true;
         // Allocate a buffer on the upload heap
-        uint8_t* pInitData = (uint8_t*)pData + offset;
+        uint8_t* pInitData = (uint8_t*)pData /*+ offset*/;
         Buffer::SharedPtr pUploadBuffer = Buffer::create(numBytes, Buffer::BindFlags::None, Buffer::CpuAccess::Write, pInitData);
 
         copyBufferRegion(pBuffer, offset, pUploadBuffer.get(), 0, numBytes);

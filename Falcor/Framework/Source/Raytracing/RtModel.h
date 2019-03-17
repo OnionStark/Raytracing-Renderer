@@ -50,6 +50,7 @@ namespace Falcor
 
         uint32_t getBottomLevelDataCount() const { return (uint32_t)mBottomLevelData.size(); }
         const BottomLevelData& getBottomLevelData(uint32_t index) const { return mBottomLevelData[index]; }
+		void updateBottomLevelData();
 
     private:
         RtModel(const Model& model, RtBuildFlags buildFlags);

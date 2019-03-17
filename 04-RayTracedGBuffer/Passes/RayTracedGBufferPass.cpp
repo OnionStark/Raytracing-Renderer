@@ -104,4 +104,70 @@ void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
 
 	// Launch our ray tracing
 	mpRays->execute( pRenderContext, mpResManager->getScreenSize() );
+	if (mpScene) {
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0));
+		OutputDebugStringA("\n");
+		/*ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(1));
+		OutputDebugStringA("\n");
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(2));
+		OutputDebugStringA("\n");
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(3));
+		OutputDebugStringA("\n");*/
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getIndexBuffer(),true);
+		OutputDebugStringA("\n");
+		
+	}
+	/*if (!hasDone) {
+		TestWriteBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0));
+		hasDone = true;
+
+	}*/
+
+}
+
+void RayTracedGBufferPass::ReadBuffer(const Buffer::SharedPtr& buffer,bool isIndecies)
+{
+	float* vPosition;
+	uint* vIndecies;
+	if (!isIndecies) {
+		vPosition = new float[buffer->getSize() / 4];
+		vPosition = (float*)buffer->map(Buffer::MapType::Read);
+	}
+	else {
+		vIndecies = new uint[buffer->getSize() / 4];
+		vIndecies = (uint*)buffer->map(Buffer::MapType::Read);
+	}
+	for (int j = 0; j < buffer->getSize()/4/3; j++) 
+	{
+		for (int i = 0; i < 3; i++) 
+		{
+			//std::cout << vPosition[j * 3 + i] << " ";
+			char chInput[512];
+			if(!isIndecies)
+			sprintf(chInput, "%f ", vPosition[j * 3 + i]);
+			else
+			sprintf(chInput, "%d ", vIndecies[j * 3 + i]);
+
+			OutputDebugStringA(chInput);
+		}
+		OutputDebugStringA("\n");
+	}
+	buffer->unmap();
+
+}
+
+void RayTracedGBufferPass::TestWriteBuffer(const Buffer::SharedPtr& buffer) {
+	//更新顶点数组
+	float* data = new float[4];
+	data[3] = 1.5f;
+	float i = 3.f;
+	size_t off = sizeof(float) * 4;
+	buffer->updateData(&i, 16, sizeof(float));
+	dynamic_cast<RtModel*>(mpScene->getModel(0).get())->updateBottomLevelData();
+	mpScene->getInstanceCount(1);
+	char chInput[512];
+	//sprintf(chInput, "%f ", data[0]);
+	sprintf(chInput, "%d ", (int)sizeof(float));
+	OutputDebugStringA(chInput);
+	OutputDebugStringA("\n");
 }

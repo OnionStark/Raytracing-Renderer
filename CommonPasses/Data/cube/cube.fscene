@@ -23,7 +23,7 @@
     },
     "models": [
         {
-            "file": "cube.obj",
+            "file": "cone2.obj",
             "name": "cube",
             "instances": [
                 {

@@ -20,6 +20,7 @@
 #include "../SharedUtils/RenderPass.h"
 #include "../SharedUtils/SimpleVars.h"
 #include "../SharedUtils/RayLaunch.h"
+//#include "API/Buffer.h"
 
 class RayTracedGBufferPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, RayTracedGBufferPass>
 {
@@ -48,4 +49,8 @@ protected:
 
 	// What's our background color?
 	vec3                        mBgColor = vec3(0.5f, 0.5f, 1.0f);  
+
+	void ReadBuffer(const Buffer::SharedPtr& buffer,bool isIndecies = false);
+	void TestWriteBuffer(const Buffer::SharedPtr& buffer);
+	bool hasDone = false;
 };
