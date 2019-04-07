@@ -27,6 +27,7 @@ struct GBuffer
 	float4 matDif   : SV_Target2;
 	float4 matSpec  : SV_Target3;
 	float4 matExtra : SV_Target4;
+	float4 matPred  : SV_Target5;
 };
 
 // Our main entry point for the g-buffer fragment shader.
@@ -42,6 +43,9 @@ GBuffer main(VertexOut vsOut, uint primID : SV_PrimitiveID, float4 pos : SV_Posi
 	if (NdotV <= 0.0f && hitPt.doubleSidedMaterial)
 		hitPt.N = -hitPt.N;
 
+	if(vsOut.prediction>0){
+		hitPt.prediction = vsOut.prediction;
+	}
 	// Dump out our G buffer channels
 	GBuffer gBufOut;
 	gBufOut.wsPos    = float4(hitPt.posW, 1.f);
@@ -49,7 +53,7 @@ GBuffer main(VertexOut vsOut, uint primID : SV_PrimitiveID, float4 pos : SV_Posi
 	gBufOut.matDif   = float4(hitPt.diffuse, hitPt.opacity);
 	gBufOut.matSpec  = float4(hitPt.specular, hitPt.linearRoughness);
 	gBufOut.matExtra = float4(hitPt.IoR, hitPt.doubleSidedMaterial ? 1.f : 0.f, 0.f, 0.f);
-
+	gBufOut.matPred  = float4(hitPt.prediction,hitPt.prediction,hitPt.prediction,1.f);
 	return gBufOut;
 }
 

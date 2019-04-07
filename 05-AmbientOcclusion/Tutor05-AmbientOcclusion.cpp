@@ -34,7 +34,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     SampleConfig config;
     config.windowDesc.title = "Tutorial 5:  Uses our rasterized G-buffer, then shoots one randomly chosen ambient occlusion ray per pixel";
     config.windowDesc.resizableWindow = true;
-
+	Logger::setVerbosity(Logger::Level::Error);
 	// Start our program!
 	RenderingPipeline::run(pipeline, config);
 }

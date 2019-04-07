@@ -59,6 +59,9 @@
     <ClCompile Include="Passes\SimpleDiffuseGIPass.cpp">
       <Filter>Passes</Filter>
     </ClCompile>
+    <ClCompile Include="Passes\PreProcess.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SharedUtils\FullscreenLaunch.h">
@@ -117,6 +120,9 @@
       <Filter>Passes</Filter>
     </ClInclude>
     <ClInclude Include="Passes\SimpleDiffuseGIPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\PreProcess.h">
       <Filter>Passes</Filter>
     </ClInclude>
   </ItemGroup>

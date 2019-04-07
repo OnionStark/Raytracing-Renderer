@@ -177,6 +177,7 @@ ShadingData initShadingData()
     sd.height = 0;
     sd.IoR = 0;
     sd.doubleSidedMaterial = false;
+	sd.prediction = 0;
 
     return sd;
 }
@@ -254,6 +255,7 @@ ShadingData _prepareShadingData<L:ITextureSampler>(VertexOut v, MaterialData m, 
         sd.N = -sd.N;
         sd.NdotV = -sd.NdotV;
     }
+	sd.prediction = v.prediction;
 
     return sd;
 }

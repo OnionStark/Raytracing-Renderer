@@ -31,7 +31,7 @@ public:
     virtual ~RayTracedGBufferPass() = default;
 
 protected:
-	RayTracedGBufferPass() : ::RenderPass("Ray Traced G-Buffer", "Ray Traced G-Buffer Options") {}
+	RayTracedGBufferPass():  ::RenderPass("Ray Traced G-Buffer", "Ray Traced G-Buffer Options") {}
 
     // Implementation of RenderPass interface
     bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
@@ -53,4 +53,6 @@ protected:
 	void ReadBuffer(const Buffer::SharedPtr& buffer,bool isIndecies = false);
 	void TestWriteBuffer(const Buffer::SharedPtr& buffer);
 	bool hasDone = false;
+	StructuredBuffer::SharedPtr TestList;
+	Buffer::SharedPtr PrimitiveDirtyBuffer;
 };

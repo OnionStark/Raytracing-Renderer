@@ -270,6 +270,7 @@ namespace Falcor
             {
                 D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
                 D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
+				D3D12_MESSAGE_ID_COPY_DESCRIPTORS_INVALID_RANGES,
             };
             D3D12_INFO_QUEUE_FILTER f = {};
             f.DenyList.NumIDs = arraysize(hideMessages);

@@ -116,6 +116,7 @@ struct ShadingData
     float2 height;
     float IoR;
     bool doubleSidedMaterial;
+	float prediction;
 };
 
 #endif  // _FALCOR_SHADER_COMMON_H_

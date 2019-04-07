@@ -66,6 +66,16 @@ void RayTracedGBufferPass::initScene(RenderContext* pRenderContext, Scene::Share
 
 	// Pass our scene to our ray tracer (if initialized)
 	if (mpRays) mpRays->setScene(mpScene);
+	
+	//创建primitive的状态位，0为未变动，1为待变动，2为已变动
+	std::vector<uint32_t> temp;
+	temp.resize(mpScene->getModel(0)->getPrimitiveCount());
+	std::generate(temp.begin(), temp.end(), [] {return 0; });
+	PrimitiveDirtyBuffer = Buffer::create(mpScene->getModel(0)->getPrimitiveCount() * sizeof(uint32_t), Resource::BindFlags::UnorderedAccess, Buffer::CpuAccess::None, temp.data());
+	auto HitVar = mpRays->getGlobalVars();
+	bool vertify = HitVar->setRawBuffer("PrimitiveDirtyBuffer", PrimitiveDirtyBuffer);
+	
+
 }
 
 void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
@@ -80,6 +90,16 @@ void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
 	Texture::SharedPtr matSpec  = mpResManager->getClearedTexture("MaterialSpecRough",   vec4(0, 0, 0, 0));
 	Texture::SharedPtr matExtra = mpResManager->getClearedTexture("MaterialExtraParams", vec4(0, 0, 0, 0));
 	Texture::SharedPtr matEmit  = mpResManager->getClearedTexture("Emissive",            vec4(0, 0, 0, 0));
+
+	//auto Var = mpRays->getHitVars(0)[0];
+
+	TestList = StructuredBuffer::create("testList",mpRays->getHitVars(0)[0]->getVars()->getDefaultBlock()->getReflection()->getResource("testList").get()->getType()->unwrapArray()->asResourceType()->inherit_shared_from_this::shared_from_this(), (int)mpScene->getModel(0)->getPrimitiveCount());
+	std::vector<int> temp;
+	temp.resize(mpScene->getModel(0)->getPrimitiveCount());
+	uint32_t counter = 0;
+	TestList->getUAVCounter()->updateData(&counter, 0, sizeof(uint32_t));
+	std::generate(temp.begin(), temp.end(), [] {return -1; });
+	TestList->setBlob(temp.data(), 0, temp.size()*sizeof(int));
 
 	// Now we'll send our parameters down to our ray tracing shaders
 
@@ -100,46 +120,56 @@ void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
 		pVars["gMatSpec"] = matSpec;
 		pVars["gMatExtra"] = matExtra;
 		pVars["gMatEmissive"] = matEmit;
-	}
 
+		pVars->setStructuredBuffer("testList", TestList);
+
+	}
+	
 	// Launch our ray tracing
 	mpRays->execute( pRenderContext, mpResManager->getScreenSize() );
 	if (mpScene) {
 		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0));
 		OutputDebugStringA("\n");
-		/*ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(1));
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(1));
 		OutputDebugStringA("\n");
 		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(2));
 		OutputDebugStringA("\n");
 		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(3));
-		OutputDebugStringA("\n");*/
-		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getIndexBuffer(),true);
 		OutputDebugStringA("\n");
-		
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getIndexBuffer(),true);
+		/*int32_t *list= new int32_t[mpScene->getModel(0)->getPrimitiveCount()];
+		TestList->readBlob(list, 0, mpScene->getModel(0)->getPrimitiveCount()*4);
+		for (uint i = 0; i < mpScene->getModel(0)->getPrimitiveCount(); i++) {
+			char chInput[512];
+				sprintf(chInput, "%d ", list[i]);
+				OutputDebugStringA(chInput);
+			OutputDebugStringA("\n");
+		}*/
+		OutputDebugStringA("\n");
 	}
-	/*if (!hasDone) {
+	if (!hasDone) {
 		TestWriteBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0));
 		hasDone = true;
 
-	}*/
+	}
 
 }
 
 void RayTracedGBufferPass::ReadBuffer(const Buffer::SharedPtr& buffer,bool isIndecies)
 {
 	float* vPosition;
-	uint* vIndecies;
+	int* vIndecies;
 	if (!isIndecies) {
 		vPosition = new float[buffer->getSize() / 4];
 		vPosition = (float*)buffer->map(Buffer::MapType::Read);
 	}
 	else {
-		vIndecies = new uint[buffer->getSize() / 4];
-		vIndecies = (uint*)buffer->map(Buffer::MapType::Read);
+		vIndecies = new int[buffer->getSize() / 4];
+		vIndecies = (int*)buffer->map(Buffer::MapType::Read);
 	}
 	for (int j = 0; j < buffer->getSize()/4/3; j++) 
 	{
-		for (int i = 0; i < 3; i++) 
+		for (int i = 0; i < 3&& (j * 3 + i)< buffer->getSize() / 4; i++)
 		{
 			//std::cout << vPosition[j * 3 + i] << " ";
 			char chInput[512];

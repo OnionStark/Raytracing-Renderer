@@ -69,6 +69,8 @@ struct VertexOut
     INTERPOLATION_MODE float3 colorV     : COLOR;
     INTERPOLATION_MODE float4 prevPosH   : PREVPOSH;
     INTERPOLATION_MODE float2 lightmapC  : LIGHTMAPUV;
+	INTERPOLATION_MODE float prediction  : PREDICTION;
+	uint vertexID :VERTEXID;
     float4 posH : SV_POSITION;
 #ifdef _SINGLE_PASS_STEREO
     INTERPOLATION_MODE float4 rightEyePosS : NV_X_RIGHT;
@@ -151,5 +153,7 @@ VertexOut defaultVS(VertexIn vIn)
     vOut.renderTargetIndex = 0;
 #endif
 
+	vOut.prediction = 0;
+	vOut.vertexID = 0;
   return vOut;
 }

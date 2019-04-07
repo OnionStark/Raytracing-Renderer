@@ -28,8 +28,22 @@ __import ShaderCommon;
 // Invokes Slang to import the default vertex shader, it's inputs and outputs
 __import DefaultVS;
 
-// Define our main() entry point for our vertex shader, then simply call the default Falcor vertex shader
-VertexOut main(VertexIn vIn)
+cbuffer PerFrameCB
 {
-	return defaultVS(vIn);
+    uint ProcessState;
+}
+
+ByteAddressBuffer PredictionList;
+
+
+// Define our main() entry point for our vertex shader, then simply call the default Falcor vertex shader
+VertexOut main(VertexIn vIn, uint vertID : SV_VertexID)
+{
+	VertexOut vOut = defaultVS(vIn);
+	if(ProcessState>0){
+		float pred = asfloat(PredictionList.Load(vertID * 4));
+		vOut.prediction = pred;
+		vOut.vertexID = vertID;
+	}
+	return vOut;
 }

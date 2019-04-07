@@ -27,6 +27,7 @@
 #include "Passes/SimpleAccumulationPass.h"
 #include "Passes/LightProbeGBufferPass.h"
 #include "Passes/SimpleDiffuseGIPass.h"
+#include "Passes/PreProcess.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
@@ -34,17 +35,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	RenderingPipeline *pipeline = new RenderingPipeline();
 
 	// Add passes into our pipeline
-	pipeline->setPass(0,LightProbeGBufferPass::create());
-	//pipeline->setPass(0, ThinLensGBufferPass::create());
+	//pipeline->setPass(0, SimpleGBufferPass::create());
+	pipeline->setPass(0, PreProcess::create());
+	pipeline->setPass(1, CopyToOutputPass::create());
 
-	pipeline->setPass(1,AmbientOcclusionPass::create("AmbientOcclusion") );
+	//pipeline->setPass(1,AmbientOcclusionPass::create("AmbientOcclusion") );
 	//pipeline->setPass(1, GGXGlobalIlluminationPass::create("HDRColorOutput"));  // Output our result to "HDRColorOutput"
 	//pipeline->setPass(2, SimpleAccumulationPass::create("HDRColorOutput"));     // Accumulate on "HDRColorOutput"
 	//pipeline->setPass(3, SimpleToneMappingPass::create("HDRColorOutput", ResourceManager::kOutputChannel));  // Tonemap "HDRColorOutput" to the output channel
-	pipeline->setPass(2, SimpleAccumulationPass::create("AmbientOcclusion"));
-	pipeline->setPass(3, SimpleDiffuseGIPass::create("DiffuseGI"));
-	pipeline->setPass(4, SimpleAccumulationPass::create("DiffuseGI"));
-	pipeline->setPass(5, CopyToOutputPass::create());
+	//pipeline->setPass(2, SimpleAccumulationPass::create("AmbientOcclusion"));
+	//pipeline->setPass(3, SimpleDiffuseGIPass::create("DiffuseGI"));
+	//pipeline->setPass(4, SimpleAccumulationPass::create("DiffuseGI"));
+
 
    
 	// Define a set of config / window parameters for our program
