@@ -81,7 +81,7 @@ void PrimaryMiss(inout SimpleRayPayload rayData)
 	ExplicitLodTextureSampler lodSampler = { 0 };
 	inc = inc + sampleTexture(pNoise, pSampler, float2(WorldRayOrigin().x,WorldRayOrigin().z), float4(1,1,1,1), 2, lodSampler).z * 0.4f;
 	rayData.Occlusion = rayData.Occlusion * inc;
-	dPosition.Store(DispatchRaysIndex().x*4*3+4, asint(WorldRayOrigin().y+rayData.Occlusion));
+	dPosition.Store(DispatchRaysIndex().x*4*3+4, asint(WorldRayOrigin().y+rayData.Occlusion*0.2f));
 }
 
 

@@ -49,10 +49,13 @@ bool PreProcess::initialize(RenderContext * pRenderContext, ResourceManager::Sha
 	mpRaster->setScene(mpScene);
 
 	//创建噪声图和噪声采样器
-	noiseTex = createPerlinNoise(200, 200, 15.0f, 2.0f);
+	noiseTex = createPerlinNoise(200, 200, 50.0f, 4.0f);
 	Sampler::Desc samplerDesc;
 	samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point).setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
 	mpNoiseSampler = Sampler::create(samplerDesc);
+
+	//共享噪声图
+	mpResManager->manageTextureResource("Noise", noiseTex);
 	return true;
 }
 
@@ -73,6 +76,9 @@ void PreProcess::execute(RenderContext * pRenderContext)
 		RenderContext* pContext = gpDevice->getRenderContext().get();
 		pContext->copyResource(mpRtScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0).get(), ChangeVertexBuffer.get());
 		pContext->flush(true);
+
+		//更新加速结构
+		dynamic_cast<RtModel*>(mpRtScene->getModel(0).get())->updateBottomLevelData();
 		ProcessState++;
 		//ReadBuffer(ExposeVertex, false);
 		//ReadBuffer(ChangeVertexBuffer, false);
@@ -210,9 +216,12 @@ Texture::SharedPtr PreProcess::createPerlinNoise(uint width, uint height, float 
 
 				//将计算的噪声值存入像素中
 				pixel[oct] = result;
+
+				frequency *= 2.0f;
+				amplitude *= scale;
 			}
 			//输出调试用灰度图
-			pixel = vec4(pixel.w, pixel.w, pixel.w, 1.0f);
+			//pixel = vec4(pixel.w, pixel.w, pixel.w, 1.0f);
 			//范围[0,1]存入vector中
 			noiseData[row*width + col] = pixel;
 		}

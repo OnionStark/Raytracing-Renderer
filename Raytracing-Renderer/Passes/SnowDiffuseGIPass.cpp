@@ -16,16 +16,15 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********************************************************************************************************************/
 
-#include "SimpleDiffuseGIPass.h"
+#include "SnowDiffuseGIPass.h"
 
 // Some global vars, used to simplify changing shader location & entry points
 namespace {
 	// Where is our shaders located?
-	const char* kFileRayTrace = "Tutorial12\\simpleDiffuseGI.rt.hlsl";
+	const char* kFileRayTrace = "Tutorial12\\snowDiffuseGI.rt.hlsl";
 
 	// What are the entry points in that shader for various ray tracing shaders?
 	const char* kEntryPointRayGen        = "SimpleDiffuseGIRayGen";
-
 
 	const char* kEntryPointMiss0         = "ShadowMiss";
 	const char* kEntryShadowAnyHit       = "ShadowAnyHit";
@@ -36,13 +35,13 @@ namespace {
 	const char* kEntryIndirectClosestHit = "IndirectClosestHit";
 };
 
-bool SimpleDiffuseGIPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
+bool SnowDiffuseGIPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
-	mpResManager->requestTextureResources({ "WorldPosition", "WorldNormal", "MaterialDiffuse" });
+	mpResManager->requestTextureResources({ "WorldPosition", "WorldNormal", "MaterialDiffuse" , "Prediction"});
 	mpResManager->requestTextureResource(mOutputTexName);
-	mpResManager->requestTextureResource(ResourceManager::kEnvironmentMap);
+	//mpResManager->requestTextureResource(ResourceManager::kEnvironmentMap);
 
 	// Set the default scene to load
 	//mpResManager->setDefaultSceneName("Data/pink_room/pink_room.fscene");
@@ -61,17 +60,22 @@ bool SimpleDiffuseGIPass::initialize(RenderContext* pRenderContext, ResourceMana
 	// Now that we've passed all our shaders in, compile and (if available) setup the scene
 	mpRays->compileRayProgram();
 	if (mpScene) mpRays->setScene(mpScene);
+
+	Sampler::Desc samplerDesc;
+	samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point).setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
+	mpNoiseSampler = Sampler::create(samplerDesc);
+
     return true;
 }
 
-void SimpleDiffuseGIPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
+void SnowDiffuseGIPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
     mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
 	if (mpRays) mpRays->setScene(mpScene);
 }
 
-void SimpleDiffuseGIPass::renderGui(Gui* pGui)
+void SnowDiffuseGIPass::renderGui(Gui* pGui)
 {
 	// Add a toggle to turn on/off shooting of indirect GI rays
 	int dirty = 0;
@@ -83,7 +87,7 @@ void SimpleDiffuseGIPass::renderGui(Gui* pGui)
 }
 
 
-void SimpleDiffuseGIPass::execute(RenderContext* pRenderContext)
+void SnowDiffuseGIPass::execute(RenderContext* pRenderContext)
 {
 	// Get the output buffer we're writing into
 	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(mOutputTexName, vec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -103,11 +107,18 @@ void SimpleDiffuseGIPass::execute(RenderContext* pRenderContext)
 	rayGenVars["gPos"]         = mpResManager->getTexture("WorldPosition");
 	rayGenVars["gNorm"]        = mpResManager->getTexture("WorldNormal");
 	rayGenVars["gDiffuseMatl"] = mpResManager->getTexture("MaterialDiffuse");
+	rayGenVars["gPrediction"] = mpResManager->getTexture("Prediction");
+
 	rayGenVars["gOutput"]      = pDstTex;
 
+	auto globalVars = mpRays->getGlobalVars();
+	globalVars["gNoise"] = mpResManager->getTexture("Noise");
+	globalVars->setSampler("gSample", mpNoiseSampler);
+
+
 	// Set our environment map texture for indirect rays that miss geometry 
-	auto missVars = mpRays->getMissVars(1);       // Remember, indirect rays are ray type #1
-	missVars["gEnvMap"] = mpResManager->getTexture(ResourceManager::kEnvironmentMap);
+	//auto missVars = mpRays->getMissVars(1);       // Remember, indirect rays are ray type #1
+	//missVars["gEnvMap"] = mpResManager->getTexture(ResourceManager::kEnvironmentMap);
 
 	// Execute our shading pass and shoot indirect rays
 	mpRays->execute( pRenderContext, mpResManager->getScreenSize());

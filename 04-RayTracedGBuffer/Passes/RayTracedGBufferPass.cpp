@@ -128,7 +128,7 @@ void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
 	// Launch our ray tracing
 	mpRays->execute( pRenderContext, mpResManager->getScreenSize() );
 	if (mpScene) {
-		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0));
+		/*ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0));
 		OutputDebugStringA("\n");
 		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(1));
 		OutputDebugStringA("\n");
@@ -136,7 +136,7 @@ void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
 		OutputDebugStringA("\n");
 		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(3));
 		OutputDebugStringA("\n");
-		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getIndexBuffer(),true);
+		ReadBuffer(mpScene->getModel(0)->getMesh(0)->getVao()->getIndexBuffer(),true);*/
 		/*int32_t *list= new int32_t[mpScene->getModel(0)->getPrimitiveCount()];
 		TestList->readBlob(list, 0, mpScene->getModel(0)->getPrimitiveCount()*4);
 		for (uint i = 0; i < mpScene->getModel(0)->getPrimitiveCount(); i++) {
@@ -194,7 +194,7 @@ void RayTracedGBufferPass::TestWriteBuffer(const Buffer::SharedPtr& buffer) {
 	size_t off = sizeof(float) * 4;
 	buffer->updateData(&i, 16, sizeof(float));
 	dynamic_cast<RtModel*>(mpScene->getModel(0).get())->updateBottomLevelData();
-	mpScene->getInstanceCount(1);
+	//mpScene->getInstanceCount(1);
 	char chInput[512];
 	//sprintf(chInput, "%f ", data[0]);
 	sprintf(chInput, "%d ", (int)sizeof(float));

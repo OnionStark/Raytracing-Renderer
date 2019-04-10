@@ -50,6 +50,24 @@ ShadingData getHitShadingData(BuiltInTriangleIntersectionAttributes attribs )
 	return prepareShadingData(vsOut, gMaterial, gCamera.posW);
 }
 
+float3 calculateSnowColor(float3 position, float3 normal,float3 light, float3 eye){
+	float3 snowColor = float3(0.95f,0.95f,1.0f);
+
+	//ExplicitLodTextureSampler lodSampler = { 0 };
+	//float3 normalR = normalize(sampleTexture(gNoise,gSampler, float2(position.x, position.z), float4(1,1,1,1),2,lodSampler).xyz);
+	float3 normalR = normal;
+	float3 normalD = normalize(normal + 0.4 * normalR );
+	float3 normalS = normalize(normal + 0.8* normalR );
+    
+	float3 diffuse = 0.4f * saturate(dot(normalD,light));
+
+	float3 halfv = normalize(light+eye);
+	float spec = saturate(dot(normalS,halfv));
+	float3 specucolor = pow(spec, 80);
+
+	return diffuse+specucolor;
+}
+
 // Utility function to get a vector perpendicular to an input vector 
 //    (from "Efficient Construction of Perpendicular Vectors Without Branching")
 float3 getPerpendicularVector(float3 u)

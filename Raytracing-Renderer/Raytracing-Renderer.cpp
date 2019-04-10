@@ -28,6 +28,7 @@
 #include "Passes/LightProbeGBufferPass.h"
 #include "Passes/SimpleDiffuseGIPass.h"
 #include "Passes/PreProcess.h"
+#include "Passes/SnowDiffuseGIPass.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
@@ -37,7 +38,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	// Add passes into our pipeline
 	//pipeline->setPass(0, SimpleGBufferPass::create());
 	pipeline->setPass(0, PreProcess::create());
-	pipeline->setPass(1, CopyToOutputPass::create());
+	pipeline->setPass(1, SnowDiffuseGIPass::create("DiffuseGI"));
+	//pipeline->setPass(1, SimpleDiffuseGIPass::create("DiffuseGI"));
+	pipeline->setPass(2, CopyToOutputPass::create());
 
 	//pipeline->setPass(1,AmbientOcclusionPass::create("AmbientOcclusion") );
 	//pipeline->setPass(1, GGXGlobalIlluminationPass::create("HDRColorOutput"));  // Output our result to "HDRColorOutput"

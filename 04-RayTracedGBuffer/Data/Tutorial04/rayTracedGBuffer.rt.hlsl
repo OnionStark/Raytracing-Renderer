@@ -120,8 +120,8 @@ void PrimaryClosestHit(inout SimpleRayPayload, BuiltInTriangleIntersectionAttrib
 	gMatExtra[launchIndex] = float4(shadeData.IoR, shadeData.doubleSidedMaterial ? 1.f : 0.f, 0.f, 0.f);
 	gMatEmissive[launchIndex] = float4(shadeData.emissive, 0.f);
 	if ((int)PrimitiveDirtyBuffer.Load(PrimitiveIndex()*4) == 0) {
-		PrimitiveDirtyBuffer.Store(PrimitiveIndex() * 4, asint(1));
-		testList.Append(PrimitiveIndex());
+		//PrimitiveDirtyBuffer.Store(PrimitiveIndex() * 4, asint(1));
+		//testList.Append(PrimitiveIndex());
 		
 	}
 	//PrimitiveDirtyBuffer.Store(PrimitiveIndex()*4, asint(1));

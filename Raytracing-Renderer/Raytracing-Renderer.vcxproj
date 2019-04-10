@@ -31,6 +31,7 @@
     <ClCompile Include="Passes\SimpleAccumulationPass.cpp" />
     <ClCompile Include="Passes\SimpleDiffuseGIPass.cpp" />
     <ClCompile Include="Passes\SimpleGBufferPass.cpp" />
+    <ClCompile Include="Passes\SnowDiffuseGIPass.cpp" />
     <ClCompile Include="Raytracing-Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +55,7 @@
     <ClInclude Include="Passes\SimpleAccumulationPass.h" />
     <ClInclude Include="Passes\SimpleDiffuseGIPass.h" />
     <ClInclude Include="Passes\SimpleGBufferPass.h" />
+    <ClInclude Include="Passes\SnowDiffuseGIPass.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
