@@ -31,7 +31,12 @@ struct SimpleRayPayload
 	float Occlusion;
 };
 
-
+cbuffer PreProcessCB
+{
+    float coordScale;
+	float coordBias;
+	float yScale;
+}
 shared RWByteAddressBuffer ExposeVertex;
 shared RWByteAddressBuffer dPosition;
 shared RWByteAddressBuffer dNormal;
@@ -77,11 +82,10 @@ void PrimaryMiss(inout SimpleRayPayload rayData)
 	// Store the background color into our diffuse material buffer
 	rayData.Occlusion = 1.0f;
 	float inc = dot(normalize(asfloat(dNormal.Load3(DispatchRaysIndex().x*3*4))), float3(0,1,0));
-	//inc = inc + pNoise.Sample(pSampler, float2(WorldRayOrigin().x,WorldRayOrigin().z)).z * 0.4f;
 	ExplicitLodTextureSampler lodSampler = { 0 };
-	inc = inc + sampleTexture(pNoise, pSampler, float2(WorldRayOrigin().x,WorldRayOrigin().z), float4(1,1,1,1), 2, lodSampler).z * 0.4f;
+	inc = inc + sampleTexture(pNoise, pSampler, float2(WorldRayOrigin().x*coordScale+coordBias,WorldRayOrigin().z*coordScale+coordBias), float4(1,1,1,1), 2, lodSampler).z * 0.4f;
 	rayData.Occlusion = rayData.Occlusion * inc;
-	dPosition.Store(DispatchRaysIndex().x*4*3+4, asint(WorldRayOrigin().y+rayData.Occlusion*0.2f));
+	dPosition.Store(DispatchRaysIndex().x*4*3+4, asint(WorldRayOrigin().y+rayData.Occlusion*yScale));
 }
 
 

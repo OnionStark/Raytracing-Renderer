@@ -62,7 +62,7 @@ bool SnowDiffuseGIPass::initialize(RenderContext* pRenderContext, ResourceManage
 	if (mpScene) mpRays->setScene(mpScene);
 
 	Sampler::Desc samplerDesc;
-	samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point).setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
+	samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear).setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
 	mpNoiseSampler = Sampler::create(samplerDesc);
 
     return true;

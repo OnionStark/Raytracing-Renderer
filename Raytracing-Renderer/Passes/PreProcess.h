@@ -36,6 +36,7 @@ protected:
 	vec3                        mBgColor = vec3(0.5f, 0.5f, 1.0f);
 	Buffer::SharedPtr ExposeVertex;
 	Buffer::SharedPtr ChangeVertexBuffer;
+	Buffer::SharedPtr OriginVertexBuffer;
 	Buffer::SharedPtr ChangeVertexNormal;
 	Fbo::SharedPtr outputFbo;
 	
@@ -44,6 +45,15 @@ protected:
 	Texture::SharedPtr noiseTex;
 	Sampler::SharedPtr mpNoiseSampler;
 
+	//噪声贴图有关参数
+	float frequency = 20.0f;
+	float amplitude = 2.0f;
+
+	//预处理参数
+	float CoordScale = 0.5f;
+	float Bias = 0.0f;
+	float yScale = 0.5f;
+	float threshold = 0.0f;
 	//Debug Function
 	void ReadBuffer(const Buffer::SharedPtr& buffer, bool isIndecies = false);
 	Texture::SharedPtr createPerlinNoise(uint width, uint height, float freq, float scale);

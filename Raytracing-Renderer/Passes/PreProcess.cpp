@@ -49,13 +49,14 @@ bool PreProcess::initialize(RenderContext * pRenderContext, ResourceManager::Sha
 	mpRaster->setScene(mpScene);
 
 	//创建噪声图和噪声采样器
-	noiseTex = createPerlinNoise(200, 200, 50.0f, 4.0f);
+	noiseTex = createPerlinNoise(200, 200, 20.0f, 2.0f);
 	Sampler::Desc samplerDesc;
-	samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point).setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
+	samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear).setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
 	mpNoiseSampler = Sampler::create(samplerDesc);
 
 	//共享噪声图
 	mpResManager->manageTextureResource("Noise", noiseTex);
+
 	return true;
 }
 
@@ -69,11 +70,18 @@ void PreProcess::execute(RenderContext * pRenderContext)
 		auto Vars = mpRays->getGlobalVars();
 		Vars["pNoise"] = noiseTex;
 		Vars->setSampler("pSampler", mpNoiseSampler);
+		
+		auto missVars = mpRays->getMissVars(0);
+		missVars["PreProcessCB"]["coordScale"] = CoordScale;
+		missVars["PreProcessCB"]["coordBias"] = Bias;
+		missVars["PreProcessCB"]["yScale"] = yScale;
+		RenderContext* pContext = gpDevice->getRenderContext().get();
+		//pContext->copyResource(mpRtScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0).get(), OriginVertexBuffer.get());
 		mpRays->execute(pRenderContext, uvec2(mpScene->getModel(0)->getVertexCount(),1));
 
 		//执行顶点位移操作
 		//这一步把位移后的顶点位置复制到原来的顶点数组内，但是RtScene的加速结构或许需要重新构建？
-		RenderContext* pContext = gpDevice->getRenderContext().get();
+
 		pContext->copyResource(mpRtScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0).get(), ChangeVertexBuffer.get());
 		pContext->flush(true);
 
@@ -138,6 +146,11 @@ void PreProcess::initScene(RenderContext * pRenderContext, Scene::SharedPtr pSce
 	pContext->copyResource(ChangeVertexNormal.get(), mpRtScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(1).get());
 	pContext->flush(true);
 
+	//保存原始的顶点buffer
+	OriginVertexBuffer = Buffer::create(mpRtScene->getModel(0)->getVertexCount() * sizeof(float3), Resource::BindFlags::ShaderResource | Resource::BindFlags::UnorderedAccess, Buffer::CpuAccess::None);
+	pContext->copyResource(OriginVertexBuffer.get(), mpRtScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0).get());
+	pContext->flush(true);
+
 	//调试用，验证是否已经设置成功
 	bool vertifyPosition = HitVar->setRawBuffer("dPosition", ChangeVertexBuffer);
 	bool vertifyNormal = HitVar->setRawBuffer("dNormal", ChangeVertexNormal);
@@ -146,16 +159,38 @@ void PreProcess::initScene(RenderContext * pRenderContext, Scene::SharedPtr pSce
 
 void PreProcess::renderGui(Gui * pGui)
 {
-	pGui->setCurrentWindowSize(220, 250);
-	if (pGui->addButton("Do Snow Modeling", true)) {
-		if (ProcessState < 2) {
-			ProcessState++;
-			setRefreshFlag();
-			//输出ProcessState的值Debug一下
-			/*char chInput[100];
-			sprintf(chInput, "%d", ProcessState);
-			OutputDebugStringA(chInput);*/
+	//pGui->setCurrentWindowSize(220, 250);
+	int Noisedirty = 0;
+	pGui->addText("Set noise texture parameters:");
+	Noisedirty |= (int)pGui->addFloatVar("Frquency", frequency, 1e-4f, 1e38f, frequency * 0.01f);
+	Noisedirty |= (int)pGui->addFloatVar("Amplitude", amplitude, 1e-4f, 1e38f, amplitude *0.01f);
+
+	int PreprocessDirty = 0;
+	pGui->addText("Set preprocess parameters:");
+	PreprocessDirty |= (int)pGui->addFloatVar("Coordinate Scale", CoordScale, 1e-4f, 1e38f, CoordScale * 0.01f);
+	PreprocessDirty |= (int)pGui->addFloatVar("Coordinate Bias", Bias);
+	PreprocessDirty |= (int)pGui->addFloatVar("y-axis Scale", yScale);
+	PreprocessDirty |= (int)pGui->addFloatVar("Blender Threshold", threshold, 0.0f, 1.0f, 0.001f);
+
+	if (Noisedirty || PreprocessDirty) {
+		if (Noisedirty) {
+			noiseTex = createPerlinNoise(200, 200, frequency, amplitude);
+			mpResManager->manageTextureResource("Noise", noiseTex);
 		}
+		setRefreshFlag();
+	}
+
+	
+	if (pGui->addButton("Do Snow Modeling", false)) {
+		RenderContext* pContext = gpDevice->getRenderContext().get();
+		pContext->copyResource(mpRtScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0).get(), OriginVertexBuffer.get());
+		//pContext->copyResource(mpScene->getModel(0)->getMesh(0)->getVao()->getVertexBuffer(0).get(), OriginVertexBuffer.get());
+		pContext->copyResource(ChangeVertexBuffer.get(), OriginVertexBuffer.get());
+		pContext->flush(true);
+
+		//更新加速结构
+		dynamic_cast<RtModel*>(mpRtScene->getModel(0).get())->updateBottomLevelData();
+		ProcessState = 1;
 	}
 	pGui->addImage("Noise Texture", noiseTex, vec2(200,200), true, false);
 }
@@ -226,7 +261,7 @@ Texture::SharedPtr PreProcess::createPerlinNoise(uint width, uint height, float 
 			noiseData[row*width + col] = pixel;
 		}
 	}
-	Texture::SharedPtr noiseTex = Texture::create2D(width, height, ResourceFormat::RGBA32Float, 1, 1u, noiseData.data());
-	return noiseTex;
+	Texture::SharedPtr noise = Texture::create2D(width, height, ResourceFormat::RGBA32Float, 1, 1u, noiseData.data());
+	return noise;
 }
 
